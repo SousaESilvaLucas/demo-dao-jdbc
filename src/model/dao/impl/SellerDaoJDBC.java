@@ -4,12 +4,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import db.DB;
+import db.DbException;
 import db.DbIntegrityException;
 import model.dao.SellerDao;
 import model.entities.Department;
@@ -25,19 +27,92 @@ public class SellerDaoJDBC implements SellerDao{
 
 	@Override
 	public void insert(Seller obj) {
-		// TODO Auto-generated method stub
+		PreparedStatement st = null;
+		try {
+			conn = DB.getConnection();
+			st = conn.prepareStatement("INSERT INTO seller "
+					+ "(Name, Email, BirthDate, BaseSalary, DepartmentId) "
+					+ "VALUES "
+					+ "(?, ?, ?, ?, ?)",Statement.RETURN_GENERATED_KEYS);
+			
+			st.setString(1,obj.getName());
+			st.setString(2,obj.getEmail());
+			st.setDate(3, obj.getBirthDate());
+			st.setDouble(4, obj.getBaseSalary());
+			st.setInt(5, obj.getDepartment().getId());
+			
+			int rowsAffected = st.executeUpdate();
+			if (rowsAffected > 0) {
+				ResultSet rs = st.getGeneratedKeys();
+				if (rs.next()) {
+					obj.setId(rs.getInt(1));
+				}
+				DB.closeResultSet(rs);
+			}
+			else {
+				throw new DbException("Unexpected Error! No rows affected.");
+			}
+			
+		} catch (SQLException e) {
+			throw new DbIntegrityException(e.getMessage());
+		} 
+		finally {
+			DB.closeStatement(st);
+		}
 		
 	}
 
 	@Override
 	public void update(Seller obj) {
-		// TODO Auto-generated method stub
+		PreparedStatement st = null;
+		try {
+			conn = DB.getConnection();
+			st = conn.prepareStatement("UPDATE seller " + 
+					"SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ? " + 
+					"WHERE Id = ?");
+			
+			st.setString(1,obj.getName());
+			st.setString(2,obj.getEmail());
+			st.setDate(3, obj.getBirthDate());
+			st.setDouble(4, obj.getBaseSalary());
+			st.setInt(5, obj.getDepartment().getId());
+			st.setInt(6, obj.getId());
+			
+			int rowsAffected = st.executeUpdate();
+			
+			if (rowsAffected > 0) {
+				System.out.println("Done! Row updated");
+			}
+			
+		} catch (SQLException e) {
+			throw new DbIntegrityException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+		}
 		
 	}
 
 	@Override
 	public void deleteById(Integer id) {
-		// TODO Auto-generated method stub
+		PreparedStatement st = null;
+		try {
+			conn = DB.getConnection();
+			st = conn.prepareStatement("DELETE FROM seller " + 
+					"WHERE Id = ?");
+			
+			st.setInt(1,id);
+			
+			int rowsAffected = st.executeUpdate();
+			
+			System.out.println("Rows affected " + rowsAffected);
+			
+		} catch (SQLException e) {
+			throw new DbIntegrityException(e.getMessage());
+		} 
+		finally {
+			DB.closeStatement(st);
+		}
 		
 	}
 
