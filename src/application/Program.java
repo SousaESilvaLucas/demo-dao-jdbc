@@ -38,6 +38,7 @@ public class Program {
 		sellerDao.insert(sellerObj1);
 		System.out.println("Done! New Id " + sellerObj1.getId());
 		
+		System.out.println("/n=== Test 5: seller update  === ");
 		Seller sellerObj2 = new Seller(25,
 				"Octavious Black", 
 				"octaviousblack@gmail.com", 
