@@ -16,6 +16,8 @@ public class Program {
 
 		System.out.println(dp);
 		System.out.println(seller);
+		System.out.println("-------------------------");
+		System.out.println(sellerDao.findById(3));
 
 	}
 
