@@ -105,7 +105,13 @@ public class SellerDaoJDBC implements SellerDao{
 			
 			int rowsAffected = st.executeUpdate();
 			
-			System.out.println("Rows affected " + rowsAffected);
+			if (rowsAffected > 0) {
+				System.out.println("Row deleted ");
+			}
+			else {
+				System.out.println("No rows affected");
+			}
+			
 			
 		} catch (SQLException e) {
 			throw new DbIntegrityException(e.getMessage());
